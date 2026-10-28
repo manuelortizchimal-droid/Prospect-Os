@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Jacana ABI — Captura de grupos",
+  "version": "1.0.0",
+  "description": "Registra en Jacana Prospect OS el grupo de Facebook abierto por el usuario.",
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+  "action": {
+    "default_title": "Agregar grupo a Jacana ABI",
+    "default_popup": "popup.html"
+  }
+}
