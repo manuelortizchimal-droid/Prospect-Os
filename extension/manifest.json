@@ -4,8 +4,7 @@
   "version": "1.0.0",
   "description": "Registra en Jacana Prospect OS el grupo de Facebook abierto por el usuario.",
   "permissions": [
-    "activeTab",
-    "tabs"
+    "activeTab"
   ],
   "action": {
     "default_title": "Agregar grupo a Jacana ABI",
