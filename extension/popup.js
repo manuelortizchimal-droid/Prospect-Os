@@ -1,25 +1,15 @@
 'use strict';
-const target='https://manuelortizchimal-droid.github.io/Prospect-Os/';
-const status=document.getElementById('status'),button=document.getElementById('send'),nameInput=document.getElementById('name');
-let groupUrl='';
-async function initialize(){
- try{
-  const [tab]=await chrome.tabs.query({active:true,currentWindow:true});
-  const u=new URL(tab?.url||'');
-  const parts=u.pathname.split('/').filter(Boolean);
-  if(!['www.facebook.com','facebook.com','m.facebook.com','web.facebook.com'].includes(u.hostname.toLowerCase())||parts[0]!=='groups'||!parts[1])throw Error('Abre un grupo de Facebook antes de usar la extensión.');
-  groupUrl='https://www.facebook.com/groups/'+encodeURIComponent(parts[1]);
-  const candidate=(tab.title||'').replace(/\s*\|\s*Facebook.*$/i,'').trim();
-  nameInput.value=candidate==='Facebook'?'':candidate.slice(0,120);
-  status.textContent='Grupo detectado. Confirma el nombre y pulsa Agregar grupo a ABI.';
- }catch(e){button.disabled=true;status.textContent=e.message||'No se pudo detectar el grupo.'}
-}
-button.addEventListener('click',async()=>{
- if(!groupUrl)return;
- const name=nameInput.value.trim();
- if(!name){status.textContent='Escribe el nombre visible del grupo.';return}
- const value=encodeURIComponent(JSON.stringify({type:'facebook_group',url:groupUrl,name}));
- const url=target+'#abi-import='+value;
- try{await chrome.tabs.create({url});status.textContent='Se abrió Prospect OS para importar el grupo.'}catch(e){status.textContent='No fue posible abrir Prospect OS: '+e.message}
-});
-initialize();
+const TARGET='https://manuelortizchimal-droid.github.io/Prospect-Os/';
+const $=id=>document.getElementById(id),status=$('status');
+let tab=null,groupUrl='';
+function setMode(mode){const post=mode==='post';$('postPanel').classList.toggle('hidden',!post);$('groupPanel').classList.toggle('hidden',post);$('tabPost').classList.toggle('active',post);$('tabGroup').classList.toggle('active',!post)}
+$('tabPost').onclick=()=>setMode('post');$('tabGroup').onclick=()=>setMode('group');
+function setStatus(msg){status.textContent=msg}
+function parseFB(raw){const u=new URL(raw);if(!['facebook.com','www.facebook.com','m.facebook.com','web.facebook.com'].includes(u.hostname.toLowerCase()))throw Error('Solo Facebook');return u}
+async function selection(){if(!tab?.id)throw Error('No se detectó la pestaña');const results=await chrome.scripting.executeScript({target:{tabId:tab.id},func:()=>window.getSelection()?.toString()?.trim()?.slice(0,2000)||''});return results?.[0]?.result||''}
+$('readSelection').onclick=async()=>{try{const t=await selection();if(!t)return setStatus('No hay texto seleccionado. Selecciona la publicación en Facebook o pégala manualmente.');$('postText').value=t;setStatus('Texto capturado. Revísalo antes de enviarlo.')}catch(e){setStatus('No se pudo leer la selección. Puedes pegar el texto manualmente.')}};
+async function init(){try{[tab]=await chrome.tabs.query({active:true,currentWindow:true});const u=parseFB(tab.url||'');const parts=u.pathname.split('/').filter(Boolean);if(parts[0]==='groups'&&parts[1])groupUrl='https://www.facebook.com/groups/'+encodeURIComponent(parts[1]);const title=(tab.title||'').replace(/\s*\|\s*Facebook.*$/i,'').slice(0,120);$('groupName').value=title==='Facebook'?'':title;$('postGroupName').value=$('groupName').value;$('postUrl').value=u.href;try{$('postText').value=await selection()}catch{};setStatus(groupUrl?'Grupo identificado. Puedes registrar el grupo o capturar una publicación.':'Facebook detectado. Pega el enlace específico y texto de la publicación.')}catch(e){$('sendPost').disabled=true;$('sendGroup').disabled=true;setStatus('Abre un grupo o una publicación de Facebook antes de utilizar la extensión.')}}
+function validateURL(raw){const u=parseFB(raw);if(!u.pathname||u.pathname==='/')throw Error('Indica una publicación de Facebook');return u.href}
+$('sendPost').onclick=async()=>{try{const text=$('postText').value.trim();if(text.length<15)throw Error('Se requieren al menos 15 caracteres de la publicación');const url=validateURL($('postUrl').value.trim());const data={type:'facebook_post',text:text.slice(0,2000),url,groupUrl,groupName:$('postGroupName').value.trim().slice(0,120)};const hash='#abi-post='+encodeURIComponent(JSON.stringify(data));if(hash.length>4900)throw Error('Texto demasiado largo para enviar. Recorta la selección.');await chrome.tabs.create({url:TARGET+hash});setStatus('Abriendo bandeja Jacana. Comprueba que la captura aparezca.')}catch(e){setStatus(e.message||'No se pudo enviar')}};
+$('sendGroup').onclick=async()=>{try{if(!groupUrl)throw Error('Abre primero un grupo de Facebook');const name=$('groupName').value.trim();if(!name)throw Error('Escribe el nombre del grupo');const hash='#abi-import='+encodeURIComponent(JSON.stringify({type:'facebook_group',url:groupUrl,name:name.slice(0,120)}));await chrome.tabs.create({url:TARGET+hash});setStatus('Abriendo Prospect OS para registrar el grupo.')}catch(e){setStatus(e.message||'No se pudo enviar')}};
+init();
