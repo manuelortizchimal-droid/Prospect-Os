@@ -41,9 +41,10 @@ function importExtensionGroup(){
 const UNITS=[{id:'713',price:4569000,beds:0},{id:'208',price:5505000,beds:1},{id:'216',price:8498000,beds:2},{id:'219',price:10842000,beds:3}];
 function opportunity(p){
  const t=norm(p.text),buy=/\b(buy|buying|purchase|purchasing|comprar|compra|adquirir)\b/.test(t),property=/condo|condominium|apartment|property|real estate|departamento|propiedad|casa|home/.test(t),zone=/bucerias|nayarit|vallarta|la cruz|riviera/.test(t),soon=/next month|within 90|ready to buy|asap|inmediato|este mes/.test(t),negative=/not buying|don't want to buy|no quiero comprar|selling my|for sale by owner/.test(t),rent=/\b(rent|rental|rentar|alquilar)\b/.test(t);
- const amount=t.match(/(?:budget|presupuesto|hasta|up to|under|around|aproximadamente)\s*(?:of|de|:)?\s*(?:mxn|usd|cad|\$)?\s*\$?\s*([\d,.]+)\s*(million|millones|million|mil|k|m)?/i);
+ const amount=t.match(/(?:budget|presupuesto|hasta|up to|under|around|aproximadamente)\s*(?:of|de|is|es|:)?\s*(?:mxn|usd|cad|us\$|ca\$|\$)?\s*\$?\s*([\d,.]+)(?:\s*(million|millones|mil|k|m)\b)?/i);
  let budget=null;
- if(amount){const raw=Number(amount[1].replace(/,/g,''));const scale=amount[2]||'';const val=raw*(/million|millones|m$/i.test(scale)?1e6:/^mil$|^k$/i.test(scale)?1000:1);if(Number.isFinite(val)&&val>=100000){const context=t.slice(Math.max(0,amount.index-35),amount.index+amount[0].length+40);const currency=/\bcad\b|ca\$/.test(context)?'CAD':/\busd\b|us\$/.test(context)?'USD':/\bmxn\b|pesos/.test(context)?'MXN':'sin confirmar';budget={value:val,currency}}}
+ if(amount){const raw=Number(amount[1].replace(/,/g,''));const scale=(amount[2]||'').toLowerCase();const val=raw*(scale==='m'||scale==='million'||scale==='millones'?1000000:scale==='mil'||scale==='k'?1000:1);
+ if(Number.isFinite(val)&&val>=100000&&val<=10000000000){const context=t.slice(Math.max(0,amount.index-28),Math.min(t.length,amount.index+amount[0].length+35));const currency=/\bcad\b|ca\$/.test(context)?'CAD':/\busd\b|us\$/.test(context)?'USD':/\bmxn\b|pesos/.test(context)?'MXN':'sin confirmar';budget={value:val,currency}}}
  const score=Math.max(0,Math.min(100,(buy?40:0)+(property?20:0)+(zone?15:0)+(soon?15:0)+(budget?10:0)-(negative?55:0)-(rent&&!buy?35:0)));
  const match=budget?.currency==='MXN'?UNITS.filter(u=>u.price<=budget.value):[];
  return {score,level:score>=65?'high':score>=35?'medium':'low',budget,match};
