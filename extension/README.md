@@ -1,48 +1,49 @@
-# Jacana ABI — Captura orgánica para Chrome (v2.0)
+# Jacana ABI — Búsqueda asistida v2.1 (Chrome)
 
-## Instalación en Chrome (Windows)
+## Instalación / actualización
 
-1. Abre https://github.com/manuelortizchimal-droid/Prospect-Os
-2. **Code → Download ZIP**. Descomprime el ZIP en una carpeta permanente del equipo.
-3. Abre **chrome://extensions** y activa **Modo de desarrollador**.
-4. Pulsa **Cargar descomprimida** y elige exactamente la carpeta **extension** que contiene **manifest.json**, **popup.html** y **popup.js**.
-5. Fija la extensión desde el icono de rompecabezas de Chrome.
-6. Si ya tenías instalada la versión 1, entra a **chrome://extensions** y pulsa **Actualizar** sobre ella (o elimínala y carga la versión 2).
+1. Descarga el ZIP del repositorio desde https://github.com/manuelortizchimal-droid/Prospect-Os/archive/refs/heads/main.zip
+2. Descomprímelo en una ubicación permanente.
+3. En Chrome abre `chrome://extensions/`.
+4. Si está instalada la v2.0, pulsa **Remove / Quitar** en la tarjeta antigua (o usa **Update** tras reemplazar los archivos de la carpeta instalada).
+5. Activa **Developer mode / Modo de desarrollador**.
+6. Pulsa **Load unpacked / Cargar descomprimida** y selecciona la carpeta **extension** que contiene `manifest.json`.
+7. Fija el icono Jacana desde el menú de extensiones.
 
-## Uso: capturar publicaciones
+## Nuevo flujo: búsqueda asistida
 
-1. Abre un grupo de Facebook con acceso autorizado.
-2. Selecciona con el mouse el texto de una publicación relevante (no incluyas datos personales sin permiso).
-3. Pulsa el icono de **Jacana ABI**.
-4. En la pestaña **Publicación**, revisa el texto. Si no se copió la selección, usa **Leer texto seleccionado** o pega el texto manualmente.
-5. Verifica el enlace específico de la publicación. Si estás viendo el grupo general, copia el enlace de esa publicación en el campo correspondiente.
-6. Pulsa **Enviar publicación a Prospect OS**. Se abre la aplicación y la captura aparece en **Oportunidades Jacana**.
-7. Revisa señales de compra, presupuesto, estado y enlace original. Solo tras confirmar información/consentimiento pasa el dato al CRM.
+1. Abre la extensión y entra en **Buscar**.
+2. Pulsa una de las **seis búsquedas**; se abre Facebook.
+3. Revisa los resultados que Facebook te muestre. Abre el grupo o la búsqueda, desplázate a los posts que quieras inspeccionar.
+4. Abre de nuevo la extensión y pulsa **Analizar pantalla actual**.
+5. El motor **local** evalúa únicamente artículos que se están mostrando en esa pantalla y ordena los que tienen señales de compra.
+6. Pulsa **Revisar para capturar** en un candidato; se carga en la pestaña **Capturar**.
+7. **Verifica texto y enlace específico de la publicación**, y pulsa **Enviar publicación a Prospect OS**.
+8. En **Oportunidades Jacana**, confirma que aparezca la captura priorizada. Registra en CRM solo un prospecto verificado y con consentimiento para seguimiento.
 
-## Uso: registrar grupo
+> Facebook cambia su interfaz. Algunos resultados no se representan como `role="article"` y no serán detectados. La lista no garantiza cobertura completa. Si no aparecen candidatos, selecciona el texto y usa la pestaña Capturar.
 
-Abre el grupo de Facebook, pulsa Jacana ABI → pestaña **Grupo** → revisa el nombre → **Registrar grupo en Prospect OS**.
+## Alcance de seguridad
 
-## Qué funciona y qué no
+- La extensión funciona únicamente al pulsar un botón. **No hace monitoreo en segundo plano ni scroll automático**, ni extrae miembros de grupos.
+- Permisos mínimos: `activeTab` y `scripting` para leer la selección y las publicaciones visibles durante una acción explícita.
+- No obtiene cookies, tokens, credenciales, ni mensajes privados.
+- La clasificación usa reglas locales de texto; no es inteligencia predictiva entrenada ni confirma que la persona tenga capacidad de compra.
+- La extensión **nunca envía automáticamente los resultados del análisis**. Solo se envía el candidato tras revisión manual.
+- Prospect OS guarda datos en `localStorage` del perfil de Chrome y **no sincroniza dispositivos**. Haz copias periódicas usando **Datos y respaldo**.
+- No copies información personal sensible o publicaciones restringidas sin autorización.
+- Capturas se transfieren a Prospect OS en un fragmento de URL que la aplicación borra tras leer. No incluyas datos personales innecesarios.
 
-- Captura bajo acción explícita del usuario. La extensión lee exclusivamente la selección de texto de la pestaña activa, si Chrome lo permite, y los campos que confirmas.
-- **No** supervisa grupos en segundo plano, no lee todas las publicaciones ni listas de miembros, y no accede a cookies, contraseñas ni mensajes privados.
-- Clasificación por reglas transparentes (no análisis con modelo de IA remoto); las coincidencias por precio son orientativas y la unidad se confirma comercialmente.
-- Datos de la aplicación en **localStorage de ese navegador/perfil**, no sincronizados entre equipos. Haz respaldos desde la sección **Datos y respaldo**.
-- Los datos de una captura viajan temporalmente en el fragmento de la URL al abrir Prospect OS y el receptor lo quita al procesarlo; no incluyas datos sensibles.
-- No hay conexión oficial automática de ida y vuelta con Facebook.
+## Pruebas de aceptación
 
-## Pruebas manuales de aceptación
+- [ ] Se muestra la pestaña **Buscar** al abrir la extensión v2.1.
+- [ ] Una búsqueda prediseñada abre Facebook correctamente.
+- [ ] **Analizar pantalla actual** muestra candidatos cuando Facebook expone artículos visibles.
+- [ ] La revisión no guarda nada en Prospect OS hasta pulsar **Enviar**.
+- [ ] El texto de intención explícita se puntúa más alto que una consulta sobre rentas.
+- [ ] La captura seleccionada llega a la bandeja **Oportunidades Jacana**.
+- [ ] Volver a enviar exactamente la misma publicación avisa de duplicado.
+- [ ] Tras recargar Prospect OS, la publicación sigue almacenada.
+- [ ] **Datos y respaldo** genera un archivo de respaldo.
 
-1. Captura un texto de prueba: `Looking to buy a condo in Bucerias next month. Budget 9000000 MXN.`
-2. Comprueba que aparezca en **Oportunidades Jacana** con intención alta.
-3. Repite la captura: debe avisar de duplicado.
-4. Actualiza la página: el registro debe permanecer.
-5. Marca **Revisada**, vuelve a cargar y confirma el estado.
-6. Prueba **Revisar CRM**; no registres datos privados sin consentimiento.
-7. Prueba texto irrelevante de renta y verifica que no se clasifique como comprador prioritario.
-8. Usa **Datos y respaldo → Descargar respaldo JSON** y comprueba que exista una copia privada.
-
-## Estado
-
-Código de Manifest V3 y lógica JavaScript revisados; pruebas automatizadas de sintaxis y cinco escenarios de presupuesto ejecutadas. **La extensión necesita validación real en Chrome con la sesión del usuario antes de considerarse aceptada para producción.**
+Pruebas realizadas en código: sintaxis, permisos, estructura del popup, siete casos de clasificación y correspondencia de IDs. **Pendiente prueba real de Chrome + Facebook**, cuya interfaz solo puede validarse con el usuario.
