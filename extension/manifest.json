@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Jacana ABI — Captura orgánica",
-  "version": "2.0.0",
-  "description": "Captura manualmente enlaces y texto seleccionado de publicaciones de Facebook y los envía a Jacana Prospect OS.",
+  "name": "Jacana ABI — Búsqueda asistida",
+  "version": "2.1.0",
+  "description": "Busca señales de compra y revisa publicaciones visibles en Facebook con una acción explícita, antes de capturarlas en Prospect OS.",
   "permissions": [
     "activeTab",
     "scripting"
