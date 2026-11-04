@@ -64,7 +64,7 @@ function importPostFromExtension(p){
  let gid=null;
  try{const gu=new URL(p.groupUrl||'');const parts=gu.pathname.split('/').filter(Boolean);if(parts[0]==='groups'&&parts[1]){gid=db.groups.find(g=>{try{return new URL(g.url).pathname.split('/')[2]===parts[1]}catch{return false}})?.id||null;if(!gid){const msg=registerGroupFromLink(gu.href,String(p.groupName||parts[1]).slice(0,120));if(msg.startsWith('Grupo registrado'))gid=db.groups.at(-1).id}}}catch{}
  if(db.posts.some(x=>x.groupId===gid&&x.text.trim().replace(/\s+/g,' ')===text.replace(/\s+/g,' ')))return 'Publicación duplicada';
- const post={id:uuid(),text,groupId:gid,source:'Facebook',url:url.href.slice(0,800),createdAt:now(),postedAt:null,reviewStatus:'nuevo',...detectPost(text)};
+ const detected=detectPost(text);const post={id:uuid(),text,groupId:gid,source:'Facebook',url:url.href.slice(0,800),createdAt:now(),postedAt:null,reviewStatus:'nuevo',buyer:detected.buyer,city:detected.city,topics:detected.topics};
  db.posts.push(post);if(!persist()){db.posts.pop();renderAll();return 'No se pudo guardar'}
  view('inbox');return 'Publicación importada. Revisa las señales y verifica el presupuesto.';
 }
