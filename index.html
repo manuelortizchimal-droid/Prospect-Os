@@ -40,7 +40,7 @@ function importExtensionGroup(){
 
 const UNITS=[{id:'713',price:4569000,beds:0},{id:'208',price:5505000,beds:1},{id:'216',price:8498000,beds:2},{id:'219',price:10842000,beds:3}];
 function opportunity(p){
- const t=norm(p.text),buy=/\b(buy|buying|purchase|purchasing|comprar|compra|adquirir)\b/.test(t),property=/condo|condominium|apartment|property|real estate|departamento|propiedad|casa|home/.test(t),zone=/bucerias|nayarit|vallarta|la cruz|riviera/.test(t),soon=/next month|within 90|ready to buy|asap|inmediato|este mes/.test(t),negative=/not buying|don't want to buy|no quiero comprar|selling my|for sale by owner/.test(t),rent=/\b(rent|rental|rentar|alquilar)\b/.test(t);
+ const t=norm(p.text),buy=/\b(buy|buying|purchase|purchasing|comprar|compra|adquirir)\b/.test(t),property=/condo|condominium|apartment|property|real estate|departamento|propiedad|casa|home/.test(t),zone=/bucerias|nayarit|vallarta|la cruz|riviera/.test(t),soon=/next month|within 90|ready to buy|asap|inmediato|este mes/.test(t),negative=/not buying|don't want to buy|no quiero comprar|selling my|selling a|sell my|selling our|for sale by owner|vendo mi|en venta mi/.test(t),rent=/\b(rent|rental|rentar|alquilar)\b/.test(t);
  const amount=t.match(/(?:budget|presupuesto|hasta|up to|under|around|aproximadamente)\s*(?:of|de|is|es|:)?\s*(?:mxn|usd|cad|us\$|ca\$|\$)?\s*\$?\s*([\d,.]+)(?:\s*(million|millones|mil|k|m)\b)?/i);
  let budget=null;
  if(amount){const raw=Number(amount[1].replace(/,/g,''));const scale=(amount[2]||'').toLowerCase();const val=raw*(scale==='m'||scale==='million'||scale==='millones'?1000000:scale==='mil'||scale==='k'?1000:1);
