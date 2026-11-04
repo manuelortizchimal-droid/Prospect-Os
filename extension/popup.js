@@ -21,14 +21,14 @@ function parseFB(raw){const u=new URL(raw);if(!['facebook.com','www.facebook.com
 function groupLink(url){try{const u=parseFB(url),p=u.pathname.split('/').filter(Boolean);return p[0]==='groups'&&p[1]?'https://www.facebook.com/groups/'+encodeURIComponent(p[1]):''}catch{return ''}}
 function rankText(text){
  const t=String(text||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
- const purchase=/\b(buy|buying|purchase|purchasing|comprar|busco comprar|quiero comprar|adquirir|looking to buy)\b/.test(t);
+ const purchase=/\b(looking to buy|want to buy|planning to buy|need to buy|ready to buy|we are buying|i am buying|buying a|buy a|busco comprar|quiero comprar|quiero adquirir|comprar un|comprar una|comprar casa|comprar depa|comprar departamento)\b/.test(t);
  const home=/\b(condo|condominium|property|apartment|home|house|departamento|depa|propiedad|casa)\b/.test(t);
  const local=/bucerias|nayarit|vallarta|la cruz|riviera/.test(t);
  const timing=/next month|this month|ready to buy|asap|soon|este mes|pronto|inmediato/.test(t);
  const budget=/\b(budget|presupuesto|up to|hasta|million|millones)\b|\$\s?[\d,.]{4,}/.test(t);
  const selling=/selling (my|our|a)|for sale by owner|vendo mi|not buying|no quiero comprar/.test(t);
  const renting=/\b(rent|rental|alquiler|rentar|alquilar)\b/.test(t);
- const score=Math.max(0,Math.min(100,(purchase?45:0)+(home?20:0)+(local?15:0)+(timing?10:0)+(budget?10:0)-(selling?60:0)-(renting&&!purchase?35:0)));
+ const generalBuy=/\b(buy|buying|purchase|purchasing|comprar|compra|adquirir)\b/.test(t);const score=Math.max(0,Math.min(100,(purchase?45:generalBuy?15:0)+(home?20:0)+(local?15:0)+(timing?10:0)+(budget?10:0)-(selling?60:0)-(renting&&!purchase?35:0)));
  return {score,level:score>=65?'Alta':score>=35?'Media':'Exploratoria'};
 }
 function searchURL(query){return 'https://www.facebook.com/search/posts/?q='+encodeURIComponent(query)}
